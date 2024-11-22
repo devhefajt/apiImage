@@ -156,7 +156,7 @@
             const files = event.target.files;
 
             // Clear previous previews if needed
-            preview.innerHTML = '';
+            // preview.innerHTML = '';
 
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
