@@ -47,4 +47,7 @@ class JwtMiddleware
 
         return $next($request);
     }
+
+    
+
 }

@@ -4,13 +4,12 @@ use App\Http\Controllers\PhotoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\PhotoApiController;
-// use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\JwtController;
 
 
 // Public Routes
-Route::post('/login', [JwtController::class, 'login']);
-
+Route::post("/create-token", [JwtController::class, "createJwtToken"]);
 // Protected Routes
 Route::middleware(['auth.jwt'])->group(function () {
     Route::get('/photos', [PhotoApiController::class, 'index'])->name('photos.index');
@@ -25,7 +24,7 @@ Route::middleware(['auth.jwt'])->group(function () {
 
 // Registration and login routes
 // Route::post('register', [AuthController::class, 'register']);
-// Route::post('login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login']);
 
 // Route::middleware('auth:sanctum')->post('logout', [AuthController::class, 'logout']);
 
