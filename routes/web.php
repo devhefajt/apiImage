@@ -17,5 +17,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/test-keys', function() {
+    dd(file_get_contents(config('jwt.private_key')), file_get_contents(config('jwt.public_key')));
+    // dd(file_exists(storage_path('keys/private.key')));
+
+});
 
 Route::resource('/photos', PhotoController::class);

@@ -4,9 +4,24 @@ use App\Http\Controllers\PhotoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\PhotoApiController;
-use App\Http\Controllers\API\AuthController;
+// use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\JwtController;
 
+
+// Public Routes
+Route::post('/login', [JwtController::class, 'login']);
+
+// Protected Routes
+Route::middleware(['auth.jwt'])->group(function () {
+    Route::get('/photos', [PhotoApiController::class, 'index'])->name('photos.index');
+});
+
+// Route::get("/create-token", [JwtController::class, "createJwtToken"]);
+// Route::get("/valid-token", [JwtController::class, "validToken"]);
+
+// Route::get('/testo', function() {
+//     dd(env("JWT_PRIVATE_KEY"));
+// });
 
 // Registration and login routes
 // Route::post('register', [AuthController::class, 'register']);
@@ -19,16 +34,8 @@ use App\Http\Controllers\API\JwtController;
 // });
 
 
-// Public Routes
-Route::post('/login', [JwtController::class, 'login']);
-Route::post('/register', [JwtController::class, 'register']);
 
-// Protected Routes
-Route::middleware(['auth.jwt'])->group(function () {
-    Route::resource('/photos', PhotoApiController::class);
-});
 
-// Route::get('photos', [PhotoApiController::class, 'index']); // Read All
 
 
 

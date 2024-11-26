@@ -1,46 +1,48 @@
-<?php
+<?php 
 
 namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Response;
-use Nowakowskir\JWT\JWT;
 use Nowakowskir\JWT\TokenEncoded;
-use Nowakowskir\JWT\Exceptions\IntegrityViolationException;
-use Nowakowskir\JWT\Exceptions\AlgorithmMismatchException;
+use Nowakowskir\JWT\JWT;
 use Nowakowskir\JWT\Exceptions\TokenExpiredException;
 use Nowakowskir\JWT\Exceptions\TokenInactiveException;
+use Nowakowskir\JWT\Exceptions\IntegrityViolationException;
+use Nowakowskir\JWT\Exceptions\AlgorithmMismatchException;
 
 class JwtMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        $token = $request->bearerToken(); // Extract the token from the Authorization header.
+        // Extract the token from the Authorization header.
+        $token = $request->bearerToken();
 
         if (!$token) {
-            return Response::json(['message' => 'Unauthorized'], 401);
+            return response()->json(['message' => 'Unauthorized'], 401);
         }
 
         try {
-            $publicKey = file_get_contents(config('jwt.public_key')); // Load public key from config.
+            $privateKey = env('JWT_PRIVATE_KEY');
 
-            // Validate the token with the public key and algorithm.
+
+            // Validate the token.
             $tokenEncoded = new TokenEncoded($token);
-            $tokenEncoded->validate($publicKey, JWT::ALGORITHM_RS256);
+            $tokenEncoded->validate($privateKey, JWT::ALGORITHM_HS256);
 
-            // Pass the decoded payload to the request for further processing.
+            // Decode the token payload
             $payload = $tokenEncoded->decode()->getPayload();
-            $request->attributes->set('jwt_payload', $payload);
 
+            // Attach payload to the request for use in controllers
+            $request->attributes->set('jwt_payload', $payload);
         } catch (TokenExpiredException $e) {
-            return Response::json(['message' => 'Token has expired'], 401);
+            return response()->json(['message' => 'Token has expired'], 401);
         } catch (TokenInactiveException $e) {
-            return Response::json(['message' => 'Token is not yet active'], 401);
+            return response()->json(['message' => 'Token is not yet active'], 401);
         } catch (IntegrityViolationException | AlgorithmMismatchException $e) {
-            return Response::json(['message' => 'Invalid token'], 401);
+            return response()->json(['message' => 'Invalid token'], 401);
         } catch (\Exception $e) {
-            return Response::json(['message' => 'Unauthorized'], 401);
+            return response()->json(['message' => 'Unauthorized'], 401);
         }
 
         return $next($request);
